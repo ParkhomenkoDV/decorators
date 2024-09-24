@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 import time
 
 name = 'decorators'
-version = time.strftime('%y-%m-%d-%H-%M-%S', time.localtime())
+version = time.strftime('%y.%m.%d.%H.%M.%S', time.localtime())
 
 with open('README.md', 'rt', encoding='utf-8') as file:
     long_description = file.read()
