@@ -2,6 +2,7 @@ from setuptools import setup, find_packages
 import time
 
 name = 'decorators'
+
 Y, m, d, H, M, S = time.strftime('%Y.%m.%d.%H.%M.%S', time.localtime()).split('.')  # конфликт версии .00.
 version = '.'.join([Y, M, d, f'0{str(int(H) + 1)}'[-2:], f'0{str(int(M) + 1)}'[-2:], f'0{str(int(S) + 1)}'[-2:]])
 
