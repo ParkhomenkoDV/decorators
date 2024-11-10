@@ -173,6 +173,22 @@ def timeit(rnd=4):
 
     return decorator
 
+def delay(t:int):
+    """Задержка выполнения ф-и"""
+
+    assert isinstance(t, int)
+
+    def decorator(function):
+        @wraps(function)
+        def wrapper(*args, **kwargs):
+            time.sleep(t)
+            result = function(*args, **kwargs)
+            return result
+        
+        return wrapper
+    
+    return decorator
+
 
 def cache(function):
     """Кэширование ф-и"""
@@ -212,11 +228,11 @@ def repeat(repeats: int):
 
     def decorator(function):
         @wraps(function)
-        def wrapper(*args, **kwargs):
+        def wrapper(*args, **kwargs) -> tuple:
             res = [None] * repeats
             for i in range(repeats):
                 res[i] = function(*args, **kwargs)
-            return res
+            return tuple(res)
 
         return wrapper
 
