@@ -105,7 +105,7 @@ def logs(level: str):
 
 
 def warns(action: str):
-    """Обработка предупреждений: пропуск (pass), игнорирование (ignore), исключение (raise)"""
+    """Обработка предупреждений: пропуск (pass), игнорирование (ignore), исключение (error)"""
 
     assert isinstance(action, str)
     action = action.strip().lower()
@@ -118,11 +118,11 @@ def warns(action: str):
             elif action == 'ignore':
                 warnings.filterwarnings('ignore')
                 result = function(*args, **kwargs)
-            elif action == 'raise':
+            elif action == 'error':
                 warnings.filterwarnings('error')
                 result = function(*args, **kwargs)
             else:
-                raise Exception(f'action {action} not in {("pass", "ignore", "raise")}')
+                raise ValueError(f'action {action} not in {("pass", "ignore", "error")}')
             warnings.filterwarnings('default')
             return result
 
