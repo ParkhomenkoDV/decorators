@@ -1,7 +1,7 @@
 from functools import wraps, lru_cache, singledispatch
 import logging
 import warnings
-# from memory_profiler import profile as memit  # готовый декоратор для замера использования памяти
+# from memory_profiler import profile as memoryit  # готовый декоратор для замера использования памяти
 from dataclasses import dataclass
 import time
 
