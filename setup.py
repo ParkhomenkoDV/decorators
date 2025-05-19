@@ -14,7 +14,7 @@ setup(
     long_description=long_description,
     long_description_content_type='text/markdown',
     author='Daniil Andryushin',
-    author_email='',
+    author_email='parkho.m.enko@mail.ru',
     url='https://github.com/ParkhomenkoDV/decorators.git',
     packages=find_packages(),
     python_requires='>=3.8',
