@@ -1,6 +1,7 @@
 from functools import wraps, lru_cache, singledispatch
 import logging
 import warnings
+
 # from memory_profiler import profile as memoryit  # готовый декоратор для замера использования памяти
 from dataclasses import dataclass
 import time
@@ -67,7 +68,7 @@ def deprecated(sms: str):
 
 
 def logs(level: str):
-    """Обработка логов: ошибки и предупреждения, только ошибки, """
+    """Обработка логов: ошибки и предупреждения, только ошибки,"""
 
     assert isinstance(level, str)
     level = level.strip().upper()
@@ -76,27 +77,29 @@ def logs(level: str):
         @wraps(function)
         def wrapper(*args, **kwargs):
             logger = logging.getLogger(__name__)
-            if level == 'NOTSET':
-                logger.log(logging.NOTSET, 'log')
+            if level == "NOTSET":
+                logger.log(logging.NOTSET, "log")
                 result = function(*args, **kwargs)
-            elif level == 'DEBUG':
-                logger.log(logging.DEBUG, 'log')
+            elif level == "DEBUG":
+                logger.log(logging.DEBUG, "log")
                 result = function(*args, **kwargs)
-            elif level == 'INFO':
-                logger.log(logging.INFO, 'log')
+            elif level == "INFO":
+                logger.log(logging.INFO, "log")
                 result = function(*args, **kwargs)
-            elif level == 'WARNING':
-                logger.log(logging.WARNING, 'log')
+            elif level == "WARNING":
+                logger.log(logging.WARNING, "log")
                 result = function(*args, **kwargs)
-            elif level == 'ERROR':
-                logger.log(logging.ERROR, 'log')
+            elif level == "ERROR":
+                logger.log(logging.ERROR, "log")
                 result = function(*args, **kwargs)
-            elif level == 'CRITICAL':
-                logger.log(logging.CRITICAL, 'log')
+            elif level == "CRITICAL":
+                logger.log(logging.CRITICAL, "log")
                 result = function(*args, **kwargs)
             else:
-                raise Exception(f'level {level} not in {("NOTSET", "DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL")}')
-            logger.log(logging.NOTSET, 'log')
+                raise Exception(
+                    f"level {level} not in {('NOTSET', 'DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL')}"
+                )
+            logger.log(logging.NOTSET, "log")
             return result
 
         return wrapper
@@ -113,17 +116,19 @@ def warns(action: str):
     def decorator(function):
         @wraps(function)
         def wrapper(*args, **kwargs):
-            if action == 'pass':
+            if action == "pass":
                 result = function(*args, **kwargs)
-            elif action == 'ignore':
-                warnings.filterwarnings('ignore')
+            elif action == "ignore":
+                warnings.filterwarnings("ignore")
                 result = function(*args, **kwargs)
-            elif action == 'error':
-                warnings.filterwarnings('error')
+            elif action == "error":
+                warnings.filterwarnings("error")
                 result = function(*args, **kwargs)
             else:
-                raise ValueError(f'action {action} not in {("pass", "ignore", "error")}')
-            warnings.filterwarnings('default')
+                raise ValueError(
+                    f"action {action} not in {('pass', 'ignore', 'error')}"
+                )
+            warnings.filterwarnings("default")
             return result
 
         return wrapper
@@ -131,10 +136,10 @@ def warns(action: str):
     return decorator
 
 
-def try_except(action: str = 'pass'):
+def try_except(action: str = "pass"):
     """Обработка исключений"""
 
-    assert type(action) is str, 'type(action) is str'
+    assert type(action) is str, "type(action) is str"
     action = action.strip().lower()
     assert action in ("pass", "raise"), 'action in ("pass", "raise")'
 
@@ -144,7 +149,7 @@ def try_except(action: str = 'pass'):
             try:
                 return function(*args, **kwargs)
             except Exception as exception:
-                if action == 'raise':
+                if action == "raise":
                     raise exception
                 else:
                     print(exception)
@@ -166,14 +171,19 @@ def timeit(rnd=4):
             result = function(*args, **kwargs)
             tac = time.perf_counter()
             elapsed_time = tac - tic
-            print(Fore.YELLOW + f'"{function.__name__}" elapsed {round(elapsed_time, rnd)} seconds' + Fore.RESET)
+            print(
+                Fore.YELLOW
+                + f'"{function.__name__}" elapsed {round(elapsed_time, rnd)} seconds'
+                + Fore.RESET
+            )
             return result
 
         return wrapper
 
     return decorator
 
-def delay(t:int):
+
+def delay(t: int):
     """Задержка выполнения ф-и"""
 
     assert isinstance(t, int)
@@ -184,9 +194,9 @@ def delay(t:int):
             time.sleep(t)
             result = function(*args, **kwargs)
             return result
-        
+
         return wrapper
-    
+
     return decorator
 
 
@@ -214,7 +224,7 @@ def countcall(function):
     def wrapper(*args, **kwargs):
         wrapper.count += 1
         result = function(*args, **kwargs)
-        print(f'{function.__name__} has been called {wrapper.count} times')
+        print(f"{function.__name__} has been called {wrapper.count} times")
         return result
 
     wrapper.count = 0
@@ -253,11 +263,13 @@ def retry(retries: int, exception_to_check: Exception, sleep_time: int | float =
                 try:
                     return function(*args, **kwargs)
                 except exception_to_check as exception:
-                    print(f"{function.__name__} raised {exception.__class__.__name__}. Retrying...")
+                    print(
+                        f"{function.__name__} raised {exception.__class__.__name__}. Retrying..."
+                    )
                     if i < retries:
                         time.sleep(sleep_time)
             # Инициирование исключения, если функция оказалось неуспешной после указанного количества повторных попыток
-            raise exception
+            raise Exception(f"func {function.__name__} ends fail in {retries} times")
 
         return wrapper
 
@@ -277,7 +289,8 @@ def rate_limited(frequency: int | float):
         def wrapper(*args, **kwargs):
             elapsed = time.perf_counter() - last_time_called[0]
             left_to_wait = min_interval - elapsed
-            if left_to_wait > 0: time.sleep(left_to_wait)
+            if left_to_wait > 0:
+                time.sleep(left_to_wait)
             ret = function(*args, **kwargs)
             last_time_called[0] = time.perf_counter()
             return ret
@@ -285,6 +298,17 @@ def rate_limited(frequency: int | float):
         return wrapper
 
     return decorator
+
+
+def enforce_kwargs(function):
+    """Требует передачу функции только через kwargs"""
+
+    @wraps
+    def wrapper(*args, **kwargs):
+        if args:
+            raise TypeError(f"function {function.__name__} requires only kwargs")
+        return function(**kwargs)
+    return wrapper
 
 
 """
@@ -305,7 +329,7 @@ def test():
     @lru_cache(maxsize=None)
     def heavy_processing(n, show=False):
         time.sleep(n)
-        return 'pip'
+        return "pip"
 
     class Movie:
         def __init__(self, r):
@@ -344,7 +368,7 @@ def test():
     def _(arg):
         print("Called with a list")
 
-    @deprecated('Этой функции не будет в следующей версии!')
+    @deprecated("Этой функции не будет в следующей версии!")
     def _foo(n):
         s = 0
         for i in range(n):
@@ -391,20 +415,24 @@ def test():
 
     fun(1)  # Выводит "Called with an integer"
 
-    john = Person(first_name="John",
-                  last_name="Doe",
-                  age=30,
-                  job="doctor", )
+    john = Person(
+        first_name="John",
+        last_name="Doe",
+        age=30,
+        job="doctor",
+    )
 
-    anne = Person(first_name="Anne",
-                  last_name="Smith",
-                  age=40,
-                  job="software engineer", )
+    anne = Person(
+        first_name="Anne",
+        last_name="Smith",
+        age=40,
+        job="software engineer",
+    )
 
     print(john == anne)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     import cProfile
 
-    cProfile.run('test()', sort='cumtime')
+    cProfile.run("test()", sort="cumtime")
