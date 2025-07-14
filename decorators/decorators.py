@@ -308,6 +308,7 @@ def enforce_kwargs(function):
         if args:
             raise TypeError(f"function {function.__name__} requires only kwargs")
         return function(**kwargs)
+
     return wrapper
 
 
