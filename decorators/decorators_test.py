@@ -2,7 +2,7 @@ import time
 from colorama import Fore, Back
 import pytest
 
-from decorators import logger, deprecated, timeit
+from decorators import logger, deprecated, timeit, enforce_kwargs
 
 
 def test_logger(capsys):
@@ -127,3 +127,54 @@ def test_timeit(capsys):
     time_str = captured.out.split("elapsed ")[1].split(" seconds")[0]
     # Проверяем, что измеренное время близко к ожидаемому
     assert pytest.approx(sleep_time, abs=0.05) == float(time_str)
+
+
+def test_enforce_kwargs():
+    # Тестируемые функции
+    @enforce_kwargs
+    def sample_func(a, b):
+        return a + b
+
+    @enforce_kwargs
+    def no_args_func():
+        return "no args"
+
+    # Проверяет успешный вызов с kwargs
+    assert sample_func(a=1, b=2) == 3
+
+    # Проверяет, что позиционные аргументы вызывают ошибку
+    with pytest.raises(TypeError) as excinfo:
+        sample_func(1, 2)
+    assert "requires only kwargs" in str(excinfo.value)
+    assert "sample_func" in str(excinfo.value)
+
+    # Проверяет, что смешанные args/kwargs вызывают ошибку
+    with pytest.raises(TypeError):
+        sample_func(1, b=2)
+
+    # Проверяет работу с функцией без аргументов
+    assert no_args_func() == "no args"
+
+    @enforce_kwargs
+    def empty_kwargs_func(**kwargs):
+        return len(kwargs)
+
+    # Проверяет работу с пустыми kwargs
+    assert empty_kwargs_func() == 0
+
+    # Проверяет сохранение метаданных функции
+    assert sample_func.__name__ == "sample_func"
+    assert no_args_func.__name__ == "no_args_func"
+
+    @enforce_kwargs
+    def func_with_defaults(x=1, y=2):
+        return x * y
+
+    # Проверяет работу с аргументами по умолчанию
+    assert func_with_defaults() == 2
+    assert func_with_defaults(x=3) == 6
+    assert func_with_defaults(y=4) == 4
+    assert func_with_defaults(x=3, y=3) == 9
+
+    with pytest.raises(TypeError):
+        func_with_defaults(3)

@@ -159,7 +159,7 @@ def try_except(action: str = "pass"):
     return decorator
 
 
-def timeit(rnd=4):
+def timeit(rnd: int = 4):
     """Измерение времени выполнения ф-и"""
 
     assert isinstance(rnd, int)
@@ -303,7 +303,7 @@ def rate_limited(frequency: int | float):
 def enforce_kwargs(function):
     """Требует передачу функции только через kwargs"""
 
-    @wraps
+    @wraps(function)
     def wrapper(*args, **kwargs):
         if args:
             raise TypeError(f"function {function.__name__} requires only kwargs")
