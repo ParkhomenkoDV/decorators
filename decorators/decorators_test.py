@@ -2,7 +2,7 @@ import time
 from colorama import Fore, Back
 import pytest
 
-from decorators import logger, deprecated, timeit, enforce_kwargs
+from decorators import *
 
 
 def test_logger(capsys):
@@ -178,3 +178,43 @@ def test_enforce_kwargs():
 
     with pytest.raises(TypeError):
         func_with_defaults(3)
+
+
+def test_ignore_extra_kwargs():
+    # Тестовая функция
+    @ignore_extra_kwargs
+    def test_func(a, b, c=3):
+        return a + b + c
+
+    # Проверяет, что функция работает с допустимыми аргументами
+    assert test_func(a=1, b=2, c=3) == 6  # Все аргументы валидны
+    assert test_func(1, 2, 3) == 6  # Позиционные аргументы
+    assert test_func(1, b=2) == 6  # Часть аргументов по умолчанию
+
+    # Проверяет, что лишние kwargs игнорируются
+    assert test_func(a=1, b=2, c=3, d=99, e=100) == 6  # d и e игнорируются
+    assert test_func(1, 2, x=10, y=20) == 6  # x и y игнорируются
+
+    # Проверяет, что ошибка возникает при нехватке обязательных аргументов
+    with pytest.raises(TypeError):
+        test_func(a=1)  # Не хватает `b`
+    with pytest.raises(TypeError):
+        test_func(1)  # Только позиционный `a`, не хватает `b`
+
+    # Проверяет работу декоратора в методах класса
+    class TestClass:
+        @ignore_extra_kwargs
+        def method(self, x, y):
+            return x * y
+
+    obj = TestClass()
+    assert obj.method(x=2, y=3, z=100) == 6  # `z` игнорируется
+    assert obj.method(2, y=3) == 6  # Позиционный `x` + именной `y`
+
+    # Проверяет функцию без kwargs (должна работать без ошибок)
+    @ignore_extra_kwargs
+    def no_kwargs_func(x, y):
+        return x - y
+
+    assert no_kwargs_func(5, 3) == 2
+    assert no_kwargs_func(x=10, y=2, z=123) == 8  # `z` игнорируется

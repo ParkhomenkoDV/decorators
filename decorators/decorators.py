@@ -67,6 +67,19 @@ def deprecated(sms: str):
     return decorator
 
 
+def ignore_extra_kwargs(function):
+    """Игнорирует лишние именные аргументы"""
+
+    @wraps(function)
+    def wrapper(*args, **kwargs):
+        return function(
+            *args,
+            **{k: v for k, v in kwargs.items() if k in function.__code__.co_varnames},
+        )
+
+    return wrapper
+
+
 def logs(level: str):
     """Обработка логов: ошибки и предупреждения, только ошибки,"""
 
