@@ -1,12 +1,12 @@
-from functools import wraps, lru_cache, singledispatch
 import logging
+import time
 import warnings
 
 # from memory_profiler import profile as memoryit  # готовый декоратор для замера использования памяти
 from dataclasses import dataclass
-import time
+from functools import lru_cache, singledispatch, wraps
 
-from colorama import Fore, Back
+from colorama import Back, Fore
 
 # https://nuancesprog.ru/p/17759/
 
@@ -110,7 +110,7 @@ def logs(level: str):
                 result = function(*args, **kwargs)
             else:
                 raise Exception(
-                    f"level {level} not in {('NOTSET', 'DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL')}"
+                    f"level '{level}' not in {('NOTSET', 'DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL')}"
                 )
             logger.log(logging.NOTSET, "log")
             return result

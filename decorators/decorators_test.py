@@ -1,8 +1,9 @@
 import time
-from colorama import Fore, Back
-import pytest
 
-from decorators import *
+import pytest
+from colorama import Back, Fore
+
+from decorators import deprecated, enforce_kwargs, ignore_extra_kwargs, logger, timeit
 
 
 def test_logger(capsys):
